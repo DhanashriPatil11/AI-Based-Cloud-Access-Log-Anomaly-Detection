@@ -66,7 +66,9 @@ Each record represents a login attempt with detailed context for anomaly detecti
   "day_of_week": 6
 }
 
-### **Response:**
+---
+
+**Response:**
 {
   "prediction": "Anomaly"
 }
