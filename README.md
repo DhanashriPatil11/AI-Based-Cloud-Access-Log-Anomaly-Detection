@@ -1,63 +1,69 @@
-# AI-Based-Cloud-Access-Log-Anomaly-Detection
- 
-### 🚀 Real-time Threat Detection using Isolation Forest & FastAPI
+# AI-Based Cloud Access Log Anomaly Detection
 
-This project implements an **AI-driven anomaly detection system** for identifying unusual login behaviors in cloud environments — such as **insider threats, data exfiltration, or off-hour logins**.  
-The solution leverages **Machine Learning (Isolation Forest)**, **FastAPI for deployment**, and **Ngrok for public API access** — built and tested in **Google Colab**.
+## 🚀 Real-Time Threat Detection with Isolation Forest & FastAPI
+
+This project is an **AI-powered anomaly detection system** that identifies suspicious logins and potential security threats in cloud environments. It’s designed to spot **insider threats, data exfiltration attempts, off-hour account access, and other abnormal login behaviors**.
+
+The pipeline combines **Machine Learning** (Isolation Forest), **FastAPI** for serving models via REST APIs, and **Ngrok** for public endpoint exposure – making the solution easy to demo, even in notebooks like **Google Colab**.
 
 ---
 
 ## 📊 Project Overview
 
-- **Goal:** Detect abnormal access patterns in real-time cloud or network log data.  
-- **Approach:** Train an Isolation Forest model on normal login activity and predict anomalies on unseen data.  
-- **Tech Stack:**  
-  - 🐍 Python, Scikit-learn, Pandas, NumPy  
-  - ⚙️ FastAPI (REST API deployment)  
-  - 🌐 Ngrok (public API tunneling for Colab)  
-  - 📈 Kaggle Dataset: [`dasgroup/rba-dataset`](https://www.kaggle.com/datasets/dasgroup/rba-dataset)
+- **Goal:** Instantly detect unusual access patterns within cloud/network authentication logs.
+- **Method:** Train an Isolation Forest to establish a baseline of normal logins; flag statistically rare/outlier events as anomalies.
+- **Tech Stack:**
+  - **Python:** Data processing & ML
+  - **Scikit-learn:** Machine learning (Isolation Forest)
+  - **Pandas, NumPy:** Data transformation
+  - **FastAPI:** Lightweight API server for model inference
+  - **Ngrok:** Easy public API creation, e.g. for Colab demos
+  - **Dataset:** [Kaggle RBA Dataset](https://www.kaggle.com/datasets/dasgroup/rba-dataset)
 
 ---
 
-## 📁 Dataset Used
-**Source:** [RBA Dataset – Kaggle](https://www.kaggle.com/datasets/dasgroup/rba-dataset)
+## 📁 Dataset Description
 
-The dataset contains anonymized login events with fields such as:
-- `User ID`, `IP Address`, `Country`, `Region`, `Timestamp`
-- `Login Successful`, `Is Attack IP`, `Is Account Takeover`
+**Source:** [RBA Dataset · Kaggle](https://www.kaggle.com/datasets/dasgroup/rba-dataset)
 
-Each record represents a login attempt with detailed context for anomaly detection and risk scoring.
+Features include:
+- `User ID`, `IP Address`, `Country`, `Region`
+- `Timestamp`, user/session temporal features
+- Annotations: `Login Successful`, `Is Attack IP`, `Is Account Takeover`
+
+Each row records a login attempt, providing comprehensive context for anomaly identification and risk assessment.
 
 ---
 
 ## ⚙️ Workflow
 
-### **1. Data Preprocessing**
-- Load and clean the RBA dataset.
-- Encode categorical features (`User ID`, `IP Address`, etc.).
-- Extract temporal features (`Hour`, `Day of Week`).
+### 1. Data Preprocessing
+- Import & clean login event data from CSV
+- Encode categorical features (`User ID`, `IP Address`) numerically
+- Extract time-based features (`hour` of login, `day_of_week`, etc.)
+- Handle missing values, standardize feature scales
 
-### **2. Model Training**
-- Use **Isolation Forest** to learn normal user behavior.
-- Detect outliers representing anomalous logins.
+### 2. Model Training (Isolation Forest)
+- Fit Isolation Forest using only *normal* login data for unsupervised anomaly detection
+- Model learns common behavior, so rare/outlier patterns (potential attacks) stand out
 
-### **3. Evaluation**
-- Visualize normal vs anomalous events.
-- Identify unusual login times, IPs, or users.
+### 3. Evaluation
+- Visualize the distribution of normal vs anomalous events (e.g., with seaborn or matplotlib)
+- Analyze flagged events: unusual login times, odd user-IP combos, suspicious geographies
 
-### **4. Deployment**
-- Deploy trained model using **FastAPI**.
-- Serve predictions via a REST API endpoint `/predict`.
-- Expose API publicly with **Ngrok** for demo in Google Colab.
+### 4. Deployment
+- Serialize and serve the model using **FastAPI**
+- REST endpoint (`POST /predict`) receives new login events, predicts anomaly likelihood in real time
+- Expose your API to the internet using **Ngrok** (e.g., for easy Colab demos or mobile test clients)
 
 ---
 
-## 🧩 Example API Usage
+## 🧩 API Demo
 
 ### **Endpoint:**  
 `POST /predict`
 
-### **Request:**
+**Sample Request:**
 ```json
 {
   "ip_encoded": 45,
@@ -65,12 +71,32 @@ Each record represents a login attempt with detailed context for anomaly detecti
   "hour": 2,
   "day_of_week": 6
 }
+```
 
----
-
-**Response:**
+**Sample Response:**
+```json
 {
   "prediction": "Anomaly"
 }
+```
 
 ---
+
+## 📝 Why Use This Approach?
+
+- **Unsupervised anomaly detection** catches *unknown* or evolving attack patterns with no need for labeled attack data.
+- **Real-time REST API** integration = plug into cloud SIEMs, dashboards, or alerting systems.
+- **Easy demos & testing:** Deploy anywhere, even from a Jupyter or Colab notebook!
+
+---
+
+## 💡 Extensions
+
+- Add geolocation/IP reputation enrichment for better risk scoring
+- Integrate user-agent analysis
+- Online learning or periodic retraining to adapt to shifting behaviors
+- Alerting & dashboard integration (e.g., Slack, Grafana)
+
+---
+
+**Feel free to [fork ⭐](#) and adapt for your own cloud threat use-case!**
